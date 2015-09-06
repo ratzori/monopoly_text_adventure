@@ -22,7 +22,7 @@ static SQUARE_T table[] =
 { 9,  SQUARE_PROPERTY, NULL },
 { 10, SQUARE_JAIL, NULL },
 { 11, SQUARE_PROPERTY, NULL },
-{ 12, SQUARE_FACILITY, NULL },
+{ 12, SQUARE_UTILITY, NULL },
 { 13, SQUARE_PROPERTY, NULL },
 { 14, SQUARE_PROPERTY, NULL },
 { 15, SQUARE_STATION, NULL },
@@ -38,7 +38,7 @@ static SQUARE_T table[] =
 { 25, SQUARE_STATION, NULL },
 { 26, SQUARE_PROPERTY, NULL },
 { 27, SQUARE_PROPERTY, NULL },
-{ 28, SQUARE_FACILITY, NULL },
+{ 28, SQUARE_UTILITY, NULL },
 { 29, SQUARE_PROPERTY, NULL },
 { 30, SQUARE_GO_TO_JAIL, NULL },
 { 31, SQUARE_PROPERTY, NULL },
@@ -52,54 +52,58 @@ static SQUARE_T table[] =
 { 39, SQUARE_PROPERTY, NULL }
 };
 
-const uint8_t square_count = sizeof( table ) / sizeof( table[0] );
+const uint8_t square_total_count = sizeof( table ) / sizeof( table[0] );
 
 static PROPERTY_T real_estate[] =
 {
-{ 1, "Korkeavuorenkatu", 1000, NULL },
-{ 1, "Kasarminkatu", 1000, NULL },
-{ 2, "Rantatie", 2000, NULL },
-{ 2, "Kauppatori", 2000, NULL },
-{ 2, "Esplanadi", 2200, NULL },
-{ 3, "Haemeentie", 2500, NULL },
-{ 3, "Siltasaari", 2500, NULL },
-{ 3, "Kaisanniemenkatu", 3000, NULL },
-{ 4, "Liisankatu", 3500, NULL },
-{ 4, "Snellmaninkatu", 3500, NULL },
-{ 4, "Unioninkatu", 3500, NULL },
-{ 5, "Loennrotinkatu", 4200, NULL },
-{ 5, "Annankatu", 4200, NULL },
-{ 5, "Simonkatu", 4500, NULL },
-{ 6, "Mikonkatu", 5000, NULL },
-{ 6, "Aleksanterinkatu", 5000, NULL },
-{ 6, "Keskuskatu", 5300, NULL },
-{ 7, "Tehtaankatu", 6000, NULL },
-{ 7, "Eira", 6000, NULL },
-{ 7, "Bulevardi", 6000, NULL },
-{ 8, "Mannerheimintie", 6500, NULL },
-{ 8, "Erottaja", 8000, NULL }
+{ 1, "Korkeavuorenkatu", 60, { 2, 10, 30, 90, 160, 250 }, 0, NULL },
+{ 1, "Kasarminkatu", 60, { 4, 20, 60, 180, 320, 450 }, 0, NULL },
+{ 2, "Rantatie", 100, { 6, 30, 90, 270, 400, 550 }, 0, NULL },
+{ 2, "Kauppatori", 100, { 6, 30, 90, 270, 400, 550 }, 0, NULL },
+{ 2, "Esplanadi", 120, { 8, 40, 100, 300, 450, 600 }, 0, NULL },
+{ 3, "Hameentie", 140, { 10, 50, 150, 450, 625, 750 }, 0, NULL },
+{ 3, "Siltasaari", 140, { 10, 50, 150, 450, 625, 750 }, 0, NULL },
+{ 3, "Kaisanniemenkatu", 160, { 12, 60, 180, 500, 700, 900 }, 0, NULL },
+{ 4, "Liisankatu", 180, { 14, 70, 200, 550, 750, 950 }, 0, NULL },
+{ 4, "Snellmaninkatu", 180, { 14, 70, 200, 550, 750, 950 }, 0, NULL },
+{ 4, "Unioninkatu", 200, { 16, 80, 220, 600, 800, 1000 }, 0, NULL },
+{ 5, "Lonnrotinkatu", 220, { 18, 90, 250, 700, 875, 1050 }, 0, NULL },
+{ 5, "Annankatu", 220, { 18, 90, 250, 700, 875, 1050 }, 0, NULL },
+{ 5, "Simonkatu", 240, { 20, 100, 300, 750, 925, 1100 }, 0, NULL },
+{ 6, "Mikonkatu", 260, { 22, 110, 330, 800, 975, 1150 }, 0, NULL },
+{ 6, "Aleksanterinkatu", 260, { 22, 110, 330, 800, 975, 1150 }, 0, NULL },
+{ 6, "Keskuskatu", 280, { 24, 120, 360, 850, 1025, 1200 }, 0, NULL },
+{ 7, "Tehtaankatu", 300, { 26, 130, 390, 900, 1100, 1275 }, 0,  NULL },
+{ 7, "Eira", 300, { 26, 130, 390, 900, 1100, 1275 }, 0,  NULL },
+{ 7, "Bulevardi", 320, { 28, 150, 450, 1000, 1200, 1400 }, 0,  NULL },
+{ 8, "Mannerheimintie", 350, { 35, 175, 500, 1100, 1300, 1500 }, 0,  NULL },
+{ 8, "Erottaja", 400, { 50, 200, 600, 1400, 1700, 2000 }, 0, NULL }
 };
 
-const uint8_t property_count = sizeof( real_estate ) / sizeof( real_estate[0] );
+const uint8_t property_total_count = sizeof( real_estate ) / sizeof( real_estate[0] );
 
 static STATION_T stations[] =
 {
-{ "Pasilan asema", 4000, NULL },
-{ "Soernaeisten asema", 4000, NULL },
-{ "Rautatieasema", 4000, NULL },
-{ "Tavara-asema", 4000, NULL }
+{ "Pasilan asema", 200, 25, NULL },
+{ "Sornaisten asema", 200, 25, NULL },
+{ "Rautatieasema", 200, 25, NULL },
+{ "Tavara-asema", 200, 25, NULL }
 };
 
-static FACILITY_T facilities[] =
+const uint8_t station_total_count = sizeof( stations ) / sizeof( stations[0] );
+
+static UTILITY_T utilities[] =
 {
-{ "Saehkoelaitos", 3000, NULL },
-{ "Vesilaitos", 3000, NULL }
+{ "Sahkolaitos", 150, NULL },
+{ "Vesilaitos", 150, NULL }
 };
+
+const uint8_t utility_total_count = sizeof( utilities ) / sizeof( utilities[0] );
 
 static PAYMENT_T income_taxes[] =
 {
-{ "Maksa tulovero", 4000, NULL },
-{ "Maksa lisaevero", 2000, NULL }
+{ "Maksa tulovero", 200, NULL },
+{ "Maksa lisavero", 100, NULL }
 };
 
 void table_init( void )
@@ -107,14 +111,14 @@ void table_init( void )
     PROPERTY_T* property;
     PAYMENT_T* income_tax;
     STATION_T* station;
-    FACILITY_T* facility;
+    UTILITY_T* utility;
     uint8_t curr_prop_count = 0;
     uint8_t curr_income_tax_count = 0;
     uint8_t curr_station_count = 0;
-    uint8_t curr_facility_count = 0;
+    uint8_t curr_utility_count = 0;
     uint8_t i;
 
-    for ( i = 0; i < square_count; i++ )
+    for ( i = 0; i < square_total_count; i++ )
         {
         switch ( table[i].type )
             {
@@ -148,11 +152,11 @@ void table_init( void )
                 table[i].data = (void*)station;
                 curr_station_count++;
                 break;
-            case SQUARE_FACILITY:
-                facility = &( facilities[curr_facility_count] );
-                facility->owner = player_bank_get();
-                table[i].data = (void*)facility;
-                curr_facility_count++;
+            case SQUARE_UTILITY:
+                utility = &( utilities[curr_utility_count] );
+                utility->owner = player_bank_get();
+                table[i].data = (void*)utility;
+                curr_utility_count++;
                 break;
             default:
                 printf("Lol wut\n");
@@ -166,12 +170,12 @@ void table_square_name_print( SQUARE_T* square )
     PAYMENT_T* payment = NULL;
     PROPERTY_T* property = NULL;
     STATION_T* station = NULL;
-    FACILITY_T* facility = NULL;
+    UTILITY_T* utility = NULL;
 
     switch ( square->type )
         {
         case SQUARE_START:
-            printf("Laehtoe\n");
+            printf("Lahto\n");
             break;
         case SQUARE_COMMON_LAND:
             printf("Yhteismaa\n");
@@ -181,10 +185,10 @@ void table_square_name_print( SQUARE_T* square )
             break;
         case SQUARE_INCOME_TAX:
             payment = (PAYMENT_T*)square->data;
-            printf("%s ( %i mk )\n", payment->desc, payment->amount );
+            printf("%s ( %i eur )\n", payment->desc, payment->amount );
             break;
         case SQUARE_FREE_PARKING:
-            printf("Vapaa pysaekoeinti\n");
+            printf("Vapaa pysakointi\n");
             break;
         case SQUARE_GO_TO_JAIL:
             printf("Mene vankilaan\n");
@@ -194,7 +198,8 @@ void table_square_name_print( SQUARE_T* square )
             break;
         case SQUARE_PROPERTY:
             property = (PROPERTY_T*)square->data;
-            printf("%s ( %i mk )", property->name, property->price );
+            printf("%s ( %i eur )", property->name, property->price );
+
             if ( property->owner != player_bank_get() )
                 {
                 printf(" - omistaja: %s\n", property->owner->name );
@@ -206,11 +211,29 @@ void table_square_name_print( SQUARE_T* square )
             break;
         case SQUARE_STATION:
             station = (STATION_T*)square->data;
-            printf("%s ( %i mk )\n", station->name, station->price );
+            printf("%s ( %i eur )", station->name, station->price );
+
+            if ( station->owner != player_bank_get() )
+                {
+                printf(" - omistaja: %s\n", station->owner->name );
+                }
+            else
+                {
+                printf("\n");
+                }
             break;
-        case SQUARE_FACILITY:
-            facility = (FACILITY_T*)square->data;
-            printf("%s ( %i mk )\n", facility->name, facility->price );
+        case SQUARE_UTILITY:
+            utility = (UTILITY_T*)square->data;
+            printf("%s ( %i eur )", utility->name, utility->price );
+
+            if ( utility->owner != player_bank_get() )
+                {
+                printf(" - omistaja: %s\n", utility->owner->name );
+                }
+            else
+                {
+                printf("\n");
+                }
             break;
         default:
             assert( 0 );
@@ -220,7 +243,7 @@ void table_square_name_print( SQUARE_T* square )
 
 SQUARE_T* table_square_get( uint8_t index )
     {
-    assert ( index < square_count );
+    assert ( index < square_total_count );
 
     return &table[index];
     }
@@ -235,16 +258,101 @@ void table_player_position_set( PLAYER_T* player, SQUARE_T* square )
 
 void table_player_move( PLAYER_T* player, uint8_t move_count )
     {
-    if ( ( player->current_place->index + move_count ) < square_count )
+    if ( ( player->current_place->index + move_count ) < square_total_count )
         {
         table_player_position_set( player, table_square_get( player->current_place->index + move_count ) );
         }
     else
         {
         /* New round */
-        table_player_position_set( player, table_square_get( square_count - player->current_place->index + move_count ) );
         printf("%s kulki lahtoruudun kautta: ", player->name);
         player_money_transfer( player_bank_get(), player, 1000 );
+        table_player_position_set( player, table_square_get( square_total_count - player->current_place->index + move_count ) );
+        }
+    }
+
+uint16_t table_property_rent_calculate( PROPERTY_T* input_property )
+    {
+    uint8_t i;
+    uint8_t group_total_count = 0;
+    uint8_t same_owner_in_group_count = 0;
+    PROPERTY_T* property;
+
+    for ( i = 0; i < property_total_count; i++ )
+        {
+        property = &( real_estate[i] );
+
+        if ( property->group == input_property->group )
+            {
+            group_total_count++;
+
+            if ( property->owner == input_property->owner )
+                {
+                same_owner_in_group_count++;
+                }
+            }
+        }
+
+    if ( ( group_total_count == same_owner_in_group_count ) && ( input_property->house_count == 0 ) )
+        {
+        return input_property->rent[0] * 2;
+        }
+    else
+        {
+        return input_property->rent[input_property->house_count];
+        }
+    }
+
+uint16_t table_station_rent_calculate( STATION_T* input_station )
+    {
+    uint8_t i;
+    uint8_t same_owner_count = 0;
+    STATION_T* station;
+    uint16_t rent = 0;
+
+    for ( i = 0; i < station_total_count; i++ )
+        {
+        station = &( stations[i] );
+
+        if ( station->owner == input_station->owner )
+            {
+            same_owner_count++;
+            }
+        }
+
+    rent = input_station->rent;
+
+    for( i = 1; i < same_owner_count; i++ )
+        {
+        rent *= 2;
+        }
+
+    return rent;
+    }
+
+uint16_t table_utility_rent_calculate( UTILITY_T* input_utility, uint8_t dice_result )
+    {
+    uint8_t i;
+    uint8_t same_owner_count = 0;
+    UTILITY_T* utility;
+
+    for ( i = 0; i < utility_total_count; i++ )
+        {
+        utility = &( utilities[i] );
+
+        if ( utility->owner == input_utility->owner )
+            {
+            same_owner_count++;
+            }
+        }
+
+    if ( same_owner_count == utility_total_count )
+        {
+        return 10 * dice_result;
+        }
+    else
+        {
+        return 4 * dice_result;
         }
     }
 

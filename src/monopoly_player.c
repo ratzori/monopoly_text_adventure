@@ -20,7 +20,7 @@ void player_banker_init( void )
     banker.token = TOKEN_INVALID;
     banker.name = malloc( sizeof( "Pankki" ) );
     strcpy ( banker.name, "Pankki" );
-    banker.account_balance = 1000000;
+    banker.account_balance = BANK_MONEY_AMOUNT;
     banker.current_place = table_square_get( 0 );
     }
 
@@ -50,7 +50,7 @@ void players_init( uint8_t player_count )
                 player->name = player_line_query( NULL );
                 }
 
-            player_money_transfer( bank, player, 30000 );
+            player_money_transfer( bank, player, PLAYER_MONEY_START );
             }
         }
     }
@@ -69,7 +69,7 @@ PLAYER_T* player_bank_get( void )
 
 void player_money_transfer( PLAYER_T* from, PLAYER_T* to, int32_t amount )
     {
-    printf("%i mk, %s -> %s\n", amount, from->name, to->name );
+    printf("%i eur, %s -> %s\n", amount, from->name, to->name );
     from->account_balance -= amount;
     to->account_balance += amount;
     }
