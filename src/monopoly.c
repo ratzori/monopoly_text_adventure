@@ -11,7 +11,7 @@
 
 #include "monopoly.h"
 
-uint8_t game_dice_throw( void )
+uint8_t game_dice_throw( bool* doubles )
     {
     uint8_t dice1;
     uint8_t dice2;
@@ -24,6 +24,11 @@ uint8_t game_dice_throw( void )
     dice2 = rand() % 6 + 1;
 
     printf("Silmaluvut %i ja %i = %i\n", dice1, dice2, dice1+dice2 );
+
+    if ( doubles != NULL )
+        {
+        *doubles = ( dice1 == dice2 );
+        }
 
     return dice1+dice2;
     }
@@ -149,7 +154,7 @@ void game_square_action( PLAYER_T* player, SQUARE_T* square )
                 if ( player != utility->owner )
                     {
                     player_money_transfer( player, utility->owner,
-                        table_utility_rent_calculate( utility, game_dice_throw() ) );
+                        table_utility_rent_calculate( utility, game_dice_throw(NULL) ) );
                     }
                 }
             break;
@@ -163,12 +168,34 @@ void game_square_action( PLAYER_T* player, SQUARE_T* square )
 void game_round( PLAYER_T* player )
     {
     uint8_t dice_sum;
+    uint8_t doubles_count = 0;
+    bool doubles = false;
 
     printf("%s [ %i eur ] - ", player->name, player->account_balance);
-    dice_sum = game_dice_throw();
 
-    table_player_move( player, dice_sum );
-    game_square_action( player, player->current_place );
+    do
+        {
+        if ( doubles == true )
+            {
+            doubles_count++;
+
+            if ( doubles_count < 3 )
+                {
+                printf("Heitit tuplat! - ");
+                }
+            else
+                {
+                printf("Heitit kolmet tuplat, joten joudut vankilaan >:(\n");
+                // TODO: SET TO JAIL
+                return;
+                }
+            }
+
+        dice_sum = game_dice_throw( &doubles );
+
+        table_player_move( player, dice_sum );
+        game_square_action( player, player->current_place );
+        } while( doubles );
     }
 
 void game_exit_cleanup( void )

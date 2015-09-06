@@ -266,7 +266,7 @@ void table_player_move( PLAYER_T* player, uint8_t move_count )
         {
         /* New round */
         printf("%s kulki lahtoruudun kautta: ", player->name);
-        player_money_transfer( player_bank_get(), player, 1000 );
+        player_money_transfer( player_bank_get(), player, 200 );
         table_player_position_set( player, table_square_get( square_total_count - player->current_place->index + move_count ) );
         }
     }
