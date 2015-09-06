@@ -16,6 +16,19 @@ SQUARE_STATION,
 SQUARE_FACILITY
 } SQUARE_E;
 
+typedef enum
+{
+TOKEN_INVALID = 0,
+TOKEN_TERRIER,
+TOKEN_BATTLESHIP,
+TOKEN_AUTOMOBILE,
+TOKEN_TOP_HAT,
+TOKEN_THIMBLE,
+TOKEN_SHOE,
+TOKEN_WHEELBARROW,
+TOKEN_IRON
+} TOKEN_E;
+
 typedef struct
 {
 uint8_t index;
@@ -25,8 +38,8 @@ void* data;
 
 typedef struct
 {
-bool active;
-char name[100];
+TOKEN_E token;
+char* name;
 int32_t account_balance; /* Check this */
 SQUARE_T* current_place;
 } PLAYER_T;

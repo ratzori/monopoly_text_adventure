@@ -1,22 +1,8 @@
 #ifndef MONOPOLY_PLAYER
 #define MONOPOLY_PLAYER
 
-#define PLAYER_COUNT_MAX 8 + 1
+#define PLAYER_COUNT_MAX 8
 #define START_MONEY 30000
-
-typedef enum
-{
-TOKEN_INVALID = 0,
-TOKEN_TERRIER,
-TOKEN_BATTLESHIP,
-TOKEN_AUTOMOBILE,
-TOKEN_TOP_HAT,
-TOKEN_THIMBLE,
-TOKEN_SHOE,
-TOKEN_WHEELBARROW,
-TOKEN_IRON
-} TOKEN_T;
-
 
 void players_init( uint8_t player_count );
 
@@ -24,8 +10,14 @@ PLAYER_T* player_get( uint8_t index );
 
 PLAYER_T* player_bank_get( void );
 
-bool player_money_transfer( PLAYER_T* from, PLAYER_T* to, int32_t amount );
+void player_money_transfer( PLAYER_T* from, PLAYER_T* to, int32_t amount );
 
-bool player_query( int accept );
+bool player_query( const char* accept );
+
+char* player_line_query( char* description );
+
+long int player_numeric_query( char* description );
+
+void player_exit_cleanup( void );
 
 #endif /* #ifndef MONOPOLY_PLAYER */

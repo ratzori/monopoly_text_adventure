@@ -229,7 +229,7 @@ void table_player_position_set( PLAYER_T* player, SQUARE_T* square )
     {
     player->current_place = square;
 
-    printf("%s - on nyt ruudussa: ", player->name );
+    printf("%s on nyt ruudussa: ", player->name );
     table_square_name_print( player->current_place );
     }
 

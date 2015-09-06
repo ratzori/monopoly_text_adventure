@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
 
 #include "monopoly_common.h"
 #include "monopoly_player.h"
@@ -10,7 +11,7 @@
 
 #include "monopoly.h"
 
-void property_buy( PROPERTY_T* property, PLAYER_T* player )
+void game_property_buy( PROPERTY_T* property, PLAYER_T* player )
     {
     if ( player->account_balance >= property->price )
         {
@@ -20,7 +21,7 @@ void property_buy( PROPERTY_T* property, PLAYER_T* player )
         }
     else
         {
-        printf("Teilla ei valitettavasti ole katetta.\n");
+        printf("Teilla ei valitettavasti ole katetta :(.\n");
         }
     }
 
@@ -57,9 +58,9 @@ void game_square_action( PLAYER_T* player, SQUARE_T* square )
                 {
                 printf("Osta kiinteisto k/E: ");
 
-                if ( player_query( 0x6B ) )
+                if ( player_query( "k" ) )
                     {
-                    property_buy( property, player );
+                    game_property_buy( property, player );
                     }
                 }
             else
@@ -72,7 +73,7 @@ void game_square_action( PLAYER_T* player, SQUARE_T* square )
             break;
         case SQUARE_STATION:
             station = (STATION_T*)square->data;
-            station = station;
+            station = station; //TODO
             break;
         case SQUARE_FACILITY:
             facility = (FACILITY_T*)square->data;
@@ -80,6 +81,7 @@ void game_square_action( PLAYER_T* player, SQUARE_T* square )
             break;
         default:
             printf("Lol wut\n");
+            assert( 0 );
             break;
         }
     }
@@ -101,7 +103,7 @@ uint8_t game_dice_throw( void )
     return dice1+dice2;
     }
 
-bool game_round( PLAYER_T* player )
+void game_round( PLAYER_T* player )
     {
     uint8_t dice_sum;
 
@@ -110,31 +112,72 @@ bool game_round( PLAYER_T* player )
 
     table_player_move( player, dice_sum );
     game_square_action( player, player->current_place );
+    }
 
-    return true;
+void game_exit_cleanup( void )
+    {
+    player_exit_cleanup();
     }
 
 int main( void )
     {
-    bool game_running = true;
-    PLAYER_T* player;
-    uint8_t current_player = 1;
+    PLAYER_T* player = NULL;
+    long int player_count = 0;
+    uint8_t current_player = 0;
+    uint8_t active_players = 0;
 
-    srand (time(NULL));
+    srand( time( NULL ) );
 
     table_init();
-    players_init( 3 );
 
-    while ( game_running )
+    player_count = player_numeric_query( "Montako pelaajaa? " );
+
+    if ( player_count < 2 )
+        {
+        printf("Pelaajia on oltava vahintaan 2.\n" );
+        player_count = 2;
+        }
+    else if ( player_count > PLAYER_COUNT_MAX )
+        {
+        printf("Pelaajia voi olla maksimissaan %i.\n", PLAYER_COUNT_MAX );
+        player_count = PLAYER_COUNT_MAX;
+        }
+
+    active_players = (uint8_t)player_count;
+    players_init( (uint8_t)player_count );
+
+    while ( 1 )
         {
         player = player_get( current_player );
-        game_running = game_round( player );
 
-        if( ++current_player > 3 )
+        if ( player->name != NULL )
             {
-            current_player = 1;
+            if ( active_players == 1 )
+                {
+                printf("%s [ %i mk ] voitti pelin!\n", player->name, player->account_balance);
+                break;
+                }
+
+            game_round( player );
+
+            if ( player->account_balance < 0 )
+                {
+                printf("%s [ %i mk ] ajautui konkurssiin :D\n", player->name, player->account_balance);
+                free( player->name );
+                player->name = NULL;
+                active_players--;
+                }
+            }
+
+        if( ++current_player == player_count )
+            {
+            current_player = 0;
             }
         }
+
+    game_exit_cleanup();
+
+    printf("Pankkiiri nousee, sammuttaa valot huoneesta ja poistuu paikalta.\n");
 
     return 0;
     }
