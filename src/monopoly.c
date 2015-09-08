@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
+#include <signal.h>
 
 #include "monopoly_common.h"
 #include "monopoly_player.h"
@@ -220,6 +221,15 @@ void game_exit_cleanup( void )
     player_exit_cleanup();
     }
 
+void signal_handler( int signal )
+    {
+    game_exit_cleanup();
+
+    printf("\nPankkiiri nousee, sammuttaa valot huoneesta ja poistuu paikalta.\n");
+
+    exit( signal );
+    }
+
 int main( void )
     {
     PLAYER_T* player = NULL;
@@ -227,6 +237,7 @@ int main( void )
     uint8_t current_player = 0;
     uint8_t active_players = 0;
 
+    signal( SIGINT, signal_handler );
     srand( time( NULL ) );
 
     table_init();
