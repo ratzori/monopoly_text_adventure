@@ -31,7 +31,9 @@ TOKEN_TOP_HAT,
 TOKEN_THIMBLE,
 TOKEN_SHOE,
 TOKEN_WHEELBARROW,
-TOKEN_IRON
+TOKEN_IRON,
+TOKEN_TRAIN,
+TOKEN_CANNON
 } TOKEN_E;
 
 typedef struct
@@ -44,10 +46,17 @@ void* data;
 typedef struct
 {
 uint8_t index;
-TOKEN_E token;
+void* token;
 char* name;
-int32_t account_balance; /* Check this */
+int32_t account_balance;
 SQUARE_T* current_place;
 } PLAYER_T;
+
+typedef struct
+{
+TOKEN_E type;
+char* name;
+PLAYER_T* owner;
+} TOKEN_T;
 
 #endif /* #ifndef MONOPOLY_COMMON */

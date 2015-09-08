@@ -171,8 +171,9 @@ void game_round( PLAYER_T* player )
     uint8_t doubles_count = 0;
     bool doubles = false;
     printf("********************************************************************************\n");
-    printf("%s [ %i eur ] - olet ruudussa: ", player->name, player->account_balance );
-    table_square_name_print(player->current_place);
+    printf("%s [ %i eur ] - ruudussa: ", player->name, player->account_balance );
+
+    table_square_name_print(player->current_place, player);
     printf("\n");
 
     if ( table_square_jail_is_player_in_prison( player ) == true )
@@ -241,6 +242,8 @@ int main( void )
     srand( time( NULL ) );
 
     table_init();
+
+    printf("********************************************************************************\n");
 
     player_count = player_numeric_query( "Montako pelaajaa? " );
 

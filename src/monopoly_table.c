@@ -174,7 +174,7 @@ void table_init( void )
         }
     }
 
-void table_square_name_print( SQUARE_T* square )
+void table_square_name_print( SQUARE_T* square, PLAYER_T* player )
     {
     PAYMENT_T* payment = NULL;
     PROPERTY_T* property = NULL;
@@ -209,7 +209,11 @@ void table_square_name_print( SQUARE_T* square )
             property = (PROPERTY_T*)square->data;
             printf("%s ( %i eur )", property->name, property->price );
 
-            if ( property->owner != player_bank_get() )
+            if ( property->owner == player )
+                {
+                printf(" - oma.");
+                }
+            else if ( property->owner != player_bank_get() )
                 {
                 printf(" - omistaja: %s", property->owner->name );
                 }
@@ -218,7 +222,11 @@ void table_square_name_print( SQUARE_T* square )
             station = (STATION_T*)square->data;
             printf("%s ( %i eur )", station->name, station->price );
 
-            if ( station->owner != player_bank_get() )
+            if ( station->owner == player )
+                {
+                printf(" - oma.");
+                }
+            else if ( station->owner != player_bank_get() )
                 {
                 printf(" - omistaja: %s", station->owner->name );
                 }
@@ -227,7 +235,11 @@ void table_square_name_print( SQUARE_T* square )
             utility = (UTILITY_T*)square->data;
             printf("%s ( %i eur )", utility->name, utility->price );
 
-            if ( utility->owner != player_bank_get() )
+            if ( utility->owner == player )
+                {
+                printf(" - oma.");
+                }
+            else if ( utility->owner != player_bank_get() )
                 {
                 printf(" - omistaja: %s", utility->owner->name );
                 }
@@ -249,8 +261,8 @@ void table_player_position_set( PLAYER_T* player, SQUARE_T* square )
     {
     player->current_place = square;
 
-    printf("Olet nyt ruudussa: ");
-    table_square_name_print( player->current_place );
+    printf("%s siirtyy ruutuun: ", ((TOKEN_T*)player->token)->name);
+    table_square_name_print( player->current_place, player );
     printf("\n");
     }
 

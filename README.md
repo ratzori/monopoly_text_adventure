@@ -28,14 +28,14 @@ $ ./monopoly_text_adventure
 6. Rent calculation and payment for properties, stations and utilities
 7. Bankruptcy detection
 8. Jail
+9. Tokens
 
 ### Todo:
-1. Tokens
-2. Property mortgage
-3. Property auction
-4. Houses and hotels
-5. Change and community chest decks
-6. Fix scandics
-7. More storylike texts
-8. CPU players
-9. Online multiplayer
+1. Property mortgage
+2. Property auction
+3. Houses and hotels
+4. Change and community chest decks
+5. Fix scandics
+6. More storylike texts
+7. CPU players
+8. Online multiplayer

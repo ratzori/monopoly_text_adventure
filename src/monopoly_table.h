@@ -45,7 +45,7 @@ PRISONER_T prisoners[PLAYER_COUNT_MAX];
 } JAIL_T;
 
 void table_init( void );
-void table_square_name_print( SQUARE_T* square );
+void table_square_name_print( SQUARE_T* square, PLAYER_T* player );
 SQUARE_T* table_square_get( uint8_t index );
 void table_player_position_set( PLAYER_T* player, SQUARE_T* square );
 void table_player_move( PLAYER_T* player, uint8_t move_count );

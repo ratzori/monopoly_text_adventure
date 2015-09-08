@@ -15,9 +15,73 @@
 static PLAYER_T banker;
 static PLAYER_T players[PLAYER_COUNT_MAX];
 
+static TOKEN_T tokens[] =
+{
+{ TOKEN_TERRIER, "Terrieri", NULL },
+{ TOKEN_BATTLESHIP, "Taistelulaiva", NULL },
+{ TOKEN_AUTOMOBILE, "Auto", NULL },
+{ TOKEN_TOP_HAT, "Silinterihattu", NULL },
+{ TOKEN_THIMBLE, "Sormustin", NULL },
+{ TOKEN_SHOE, "Kenka", NULL },
+{ TOKEN_WHEELBARROW, "Kottikarryt", NULL },
+{ TOKEN_IRON, "Silitysrauta", NULL },
+{ TOKEN_TRAIN, "Juna", NULL },
+{ TOKEN_CANNON, "Tykki", NULL }
+};
+
+const uint8_t tokens_total_count = sizeof( tokens ) / sizeof( tokens[0] );
+
+TOKEN_T* player_token_select( PLAYER_T* player )
+    {
+    uint8_t i;
+    uint8_t token_index = 1;
+    long int token_select;
+    TOKEN_T* token = NULL;
+
+    printf("Vapaat pelimerkit:\n");
+
+    for ( i = 0; i < tokens_total_count; i++ )
+        {
+        if ( tokens[i].owner == NULL )
+            {
+            printf("\t%i. %s\n", token_index, tokens[i].name);
+            token_index++;
+            }
+        }
+
+    token_select = player_numeric_query( "Valitse pelimerkkisi: " );
+
+    if ( ( token_select == 0 ) || ( token_select >= token_index ) )
+        {
+        printf("\to_O wut?\n");
+        token_select = 1;
+        }
+
+    token_index = 1;
+
+    for ( i = 0; i < tokens_total_count; i++ )
+        {
+        if ( tokens[i].owner == NULL )
+            {
+            if ( token_index == token_select )
+                {
+                tokens[i].owner = player;
+                token = &( tokens[i] );
+                break;
+                }
+            token_index++;
+            }
+        }
+
+    assert( token != NULL );
+
+    printf("Valitsit pelimerkiksesi: %s\n", token->name );
+    return token;
+    }
+
 void player_banker_init( void )
     {
-    banker.token = TOKEN_INVALID;
+    banker.token = NULL;
     banker.name = malloc( sizeof( "Pankki" ) );
     strcpy ( banker.name, "Pankki" );
     banker.account_balance = BANK_MONEY_AMOUNT;
@@ -38,19 +102,22 @@ void players_init( uint8_t player_count )
         player = &( players[i] );
 
         player->index = i;
-        player->token = TOKEN_INVALID;
+        player->token = NULL;
         player->name = NULL;
         player->account_balance = 0;
         player->current_place = table_square_get( 0 );
 
         if ( i < player_count )
             {
+            printf("********************************************************************************\n");
+
             while ( player->name == NULL )
                 {
                 printf("Pelaajan %i nimi: ", i+1 );
                 player->name = player_line_query( NULL );
                 }
 
+            player->token = player_token_select( player );
             player_money_transfer( bank, player, PLAYER_MONEY_START );
             }
         }
@@ -140,6 +207,7 @@ char* player_line_query( char* description )
 
 long int player_numeric_query( char* description )
     {
+    long int answer_int;
     char* answer = NULL;
 
     while( answer == NULL )
@@ -147,7 +215,10 @@ long int player_numeric_query( char* description )
         answer = player_line_query( description );
         }
 
-    return strtol( answer, NULL, 10 );
+    answer_int = strtol( answer, NULL, 10 );
+    free( answer );
+
+    return answer_int;
     }
 
 void player_exit_cleanup( void )
