@@ -368,9 +368,10 @@ bool table_square_jail_action( PLAYER_T* player )
     printf("maksa takuut [k/E]: ");
     if ( player_query( "k" ) )
         {
+        printf("Maksoit takuut ja vapauduit vankilasta.\n");
+        table_square_jail_player_to_free_set( player );
         player_money_transfer( player, player_bank_get(), 50 );
         allowed_to_continue_round = true;
-        printf("Maksoit takuut ja vapauduit vankilasta.\n");
         }
     else
         {
