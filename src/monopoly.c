@@ -17,7 +17,7 @@ uint8_t game_dice_throw( bool* doubles )
     uint8_t dice2;
 
     printf("Heita nopat painamalla enter...");
-    (void)player_line_query( NULL );
+    (void)player_query( "" );
     dice1 = rand() % 6 + 1;
     dice2 = rand() % 6 + 1;
 
