@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <assert.h>
 
+#include "monopoly.h"
 #include "monopoly_common.h"
 #include "monopoly_player.h"
 
@@ -106,6 +107,8 @@ static PAYMENT_T income_taxes[] =
 { "Maksa lisavero", 100, NULL }
 };
 
+static JAIL_T jail;
+
 void table_init( void )
     {
     PROPERTY_T* property;
@@ -117,6 +120,12 @@ void table_init( void )
     uint8_t curr_station_count = 0;
     uint8_t curr_utility_count = 0;
     uint8_t i;
+
+    for ( i = 0; i < PLAYER_COUNT_MAX; i++ )
+        {
+        jail.prisoners[i].dice_roll_times = 0;
+        jail.prisoners[i].inmate = NULL;
+        }
 
     for ( i = 0; i < square_total_count; i++ )
         {
@@ -175,26 +184,26 @@ void table_square_name_print( SQUARE_T* square )
     switch ( square->type )
         {
         case SQUARE_START:
-            printf("Lahto\n");
+            printf("lahto");
             break;
         case SQUARE_COMMON_LAND:
-            printf("Yhteismaa\n");
+            printf("yhteismaa");
             break;
         case SQUARE_RANDOM:
-            printf("Sattuma\n");
+            printf("sattuma");
             break;
         case SQUARE_INCOME_TAX:
             payment = (PAYMENT_T*)square->data;
-            printf("%s ( %i eur )\n", payment->desc, payment->amount );
+            printf("%s ( %i eur )", payment->desc, payment->amount );
             break;
         case SQUARE_FREE_PARKING:
-            printf("Vapaa pysakointi\n");
+            printf("vapaa pysakointi");
             break;
         case SQUARE_GO_TO_JAIL:
-            printf("Mene vankilaan\n");
+            printf("mene suoraan vankilaan, kulkematta lahtoruudun kautta!");
             break;
         case SQUARE_JAIL:
-            printf("Vankila\n");
+            printf("vankila");
             break;
         case SQUARE_PROPERTY:
             property = (PROPERTY_T*)square->data;
@@ -202,11 +211,7 @@ void table_square_name_print( SQUARE_T* square )
 
             if ( property->owner != player_bank_get() )
                 {
-                printf(" - omistaja: %s\n", property->owner->name );
-                }
-            else
-                {
-                printf("\n");
+                printf(" - omistaja: %s", property->owner->name );
                 }
             break;
         case SQUARE_STATION:
@@ -215,11 +220,7 @@ void table_square_name_print( SQUARE_T* square )
 
             if ( station->owner != player_bank_get() )
                 {
-                printf(" - omistaja: %s\n", station->owner->name );
-                }
-            else
-                {
-                printf("\n");
+                printf(" - omistaja: %s", station->owner->name );
                 }
             break;
         case SQUARE_UTILITY:
@@ -228,11 +229,7 @@ void table_square_name_print( SQUARE_T* square )
 
             if ( utility->owner != player_bank_get() )
                 {
-                printf(" - omistaja: %s\n", utility->owner->name );
-                }
-            else
-                {
-                printf("\n");
+                printf(" - omistaja: %s", utility->owner->name );
                 }
             break;
         default:
@@ -252,12 +249,15 @@ void table_player_position_set( PLAYER_T* player, SQUARE_T* square )
     {
     player->current_place = square;
 
-    printf("%s on nyt ruudussa: ", player->name );
+    printf("Olet nyt ruudussa: ");
     table_square_name_print( player->current_place );
+    printf("\n");
     }
 
 void table_player_move( PLAYER_T* player, uint8_t move_count )
     {
+    assert( table_square_jail_is_player_in_prison( player ) == false );
+
     if ( ( player->current_place->index + move_count ) < square_total_count )
         {
         table_player_position_set( player, table_square_get( player->current_place->index + move_count ) );
@@ -265,9 +265,9 @@ void table_player_move( PLAYER_T* player, uint8_t move_count )
     else
         {
         /* New round */
-        printf("%s kulki lahtoruudun kautta: ", player->name);
+        printf("Kuljit lahtoruudun kautta.\n");
         player_money_transfer( player_bank_get(), player, 200 );
-        table_player_position_set( player, table_square_get( square_total_count - player->current_place->index + move_count ) );
+        table_player_position_set( player, table_square_get( ( player->current_place->index + move_count ) - square_total_count ) );
         }
     }
 
@@ -356,3 +356,66 @@ uint16_t table_utility_rent_calculate( UTILITY_T* input_utility, uint8_t dice_re
         }
     }
 
+bool table_square_jail_action( PLAYER_T* player )
+    {
+    PRISONER_T* prisoner;
+    prisoner = &( jail.prisoners[player->index] );
+    bool allowed_to_continue_round = false;
+    bool doubles = false;
+
+    // TODO if: use "Get out of Jail Free card"
+
+    printf("maksa takuut [k/E]: ");
+    if ( player_query( "k" ) )
+        {
+        player_money_transfer( player, player_bank_get(), 50 );
+        allowed_to_continue_round = true;
+        printf("Maksoit takuut ja vapauduit vankilasta.\n");
+        }
+    else
+        {
+        (void)game_dice_throw( &doubles );
+
+        if ( doubles )
+            {
+            printf("Heitit tuplat ja vapauduit vankilasta.\n");
+            table_square_jail_player_to_free_set( player );
+            prisoner->dice_roll_times = 0;
+            }
+        else
+            {
+            prisoner->dice_roll_times++;
+            if ( prisoner->dice_roll_times == 3 )
+                {
+                printf("Et saanut tuplia kolmella kierroksella.\n");
+                printf("Maksoit takuut ja vapauduit vankilasta.\n");
+                player_money_transfer( player, player_bank_get(), 50 );
+                table_square_jail_player_to_free_set( player );
+                prisoner->dice_roll_times = 0;
+                }
+            else
+                {
+                printf("Et saanut tuplia, joten vankeutesi jatkuu.\n");
+                }
+            }
+        }
+
+    return allowed_to_continue_round;
+    }
+
+bool table_square_jail_is_player_in_prison( PLAYER_T* player )
+    {
+    return ( jail.prisoners[player->index].inmate == player );
+    }
+
+void table_square_jail_player_to_cell_set( PLAYER_T* player )
+    {
+    jail.prisoners[player->index].dice_roll_times = 0;
+    jail.prisoners[player->index].inmate = player;
+    }
+
+void table_square_jail_player_to_free_set( PLAYER_T* player )
+    {
+    jail.prisoners[player->index].dice_roll_times = 0;
+    jail.prisoners[player->index].inmate = NULL;
+    }

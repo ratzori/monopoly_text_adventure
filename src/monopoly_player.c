@@ -37,6 +37,7 @@ void players_init( uint8_t player_count )
         {
         player = &( players[i] );
 
+        player->index = i;
         player->token = TOKEN_INVALID;
         player->name = NULL;
         player->account_balance = 0;

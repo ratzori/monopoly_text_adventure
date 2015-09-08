@@ -17,7 +17,7 @@ uint8_t game_dice_throw( bool* doubles )
     uint8_t dice2;
     int c;
 
-    printf("heita nopat painamalla enter...");
+    printf("Heita nopat painamalla enter...");
     c = getchar();
     c = c; // Temp, hide compiling warning
     dice1 = rand() % 6 + 1;
@@ -95,6 +95,7 @@ void game_square_action( PLAYER_T* player, SQUARE_T* square )
         case SQUARE_FREE_PARKING:
             break;
         case SQUARE_GO_TO_JAIL:
+            table_square_jail_player_to_cell_set( player );
             table_player_position_set( player, table_square_get(10) );
             break;
         case SQUARE_JAIL:
@@ -170,32 +171,50 @@ void game_round( PLAYER_T* player )
     uint8_t dice_sum;
     uint8_t doubles_count = 0;
     bool doubles = false;
+    printf("********************************************************************************\n");
+    printf("%s [ %i eur ] - olet ruudussa: ", player->name, player->account_balance );
+    table_square_name_print(player->current_place);
+    printf("\n");
 
-    printf("%s [ %i eur ] - ", player->name, player->account_balance);
+    if ( table_square_jail_is_player_in_prison( player ) == true )
+        {
+        printf("Olet vangittuna - ");
+
+        if ( table_square_jail_action( player ) == false )
+            {
+            return;
+            }
+        }
 
     do
         {
+        dice_sum = game_dice_throw( &doubles );
+
         if ( doubles == true )
             {
             doubles_count++;
 
-            if ( doubles_count < 3 )
-                {
-                printf("Heitit tuplat! - ");
-                }
-            else
+            if ( doubles_count == 3 )
                 {
                 printf("Heitit kolmet tuplat, joten joudut vankilaan >:(\n");
-                // TODO: SET TO JAIL
-                return;
+                table_square_jail_player_to_cell_set( player );
+                break;
                 }
             }
 
-        dice_sum = game_dice_throw( &doubles );
-
         table_player_move( player, dice_sum );
         game_square_action( player, player->current_place );
-        } while( doubles );
+
+        if ( table_square_jail_is_player_in_prison( player ) == true )
+            {
+            break;
+            }
+
+        if ( doubles == true )
+            {
+            printf("Heitit tuplat! - ");
+            }
+        }while( doubles );
     }
 
 void game_exit_cleanup( void )

@@ -1,9 +1,6 @@
 #ifndef MONOPOLY_PLAYER
 #define MONOPOLY_PLAYER
 
-#define PLAYER_COUNT_MAX 8
-#define START_MONEY 30000
-
 void players_init( uint8_t player_count );
 
 PLAYER_T* player_get( uint8_t index );

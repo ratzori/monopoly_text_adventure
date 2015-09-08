@@ -3,6 +3,8 @@
 
 #define BANK_MONEY_AMOUNT 15140
 #define PLAYER_MONEY_START ( 2*500 + 2*100 + 2*50 + 6*20 + 5*10 + 5*5 + 5*1 )
+#define PLAYER_COUNT_MAX 8
+#define START_MONEY 30000
 
 typedef enum
 {
@@ -41,6 +43,7 @@ void* data;
 
 typedef struct
 {
+uint8_t index;
 TOKEN_E token;
 char* name;
 int32_t account_balance; /* Check this */
